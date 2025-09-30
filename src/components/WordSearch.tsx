@@ -88,6 +88,7 @@ function WordSearch() {
           backgroundColor: '#f5f5f5'
         }}
         inputProps={{
+            maxLength : 30,
             role: 'combobox',
             'aria-autocomplete': 'list',
             'aria-controls': 'word-search-results',
