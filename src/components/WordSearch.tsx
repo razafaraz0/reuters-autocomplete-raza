@@ -9,24 +9,37 @@ import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
 import Box from '@mui/material/Box';
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
 
 function WordSearch() {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null);
+  const [limit, setLimit] = useState('10'); 
 
   const debouncedSetSearch = useMemo(
     () => debounce((value: string) => setDebouncedSearch(value), DEBOUNCE_LIMIT),
     []
   );
 
-  const { data, isLoading, isError } = useGetWord({ query: debouncedSearch, limit: 10 });
+  const { data, isLoading, isError } = useGetWord({ 
+    query: debouncedSearch, 
+    limit: parseInt(limit, 10)
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearch(value);
     debouncedSetSearch(value);
+  };
+  
+  const handleLimitChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setLimit(event.target.value);
   };
 
   const handleItemClick = (word: string, idx: number) => {
@@ -37,14 +50,34 @@ function WordSearch() {
   const statusMessage = useMemo(() => {
     if (isLoading) return "Loading search results.";
     if (isError) return "Failed to fetch words.";
-     if (data && data.length === 0 && search.length > 0) return "No matching word found.";
-    if (data && data.length > 0) return `${data.length} results found.`;
+    if (data && data.length === 0 && search.length > 0) return "No matching word found.";
+    if (data && data.length > 0) return `${data.length} results found (Limit: ${limit}).`; 
     return "";
-  }, [isLoading, isError, data, search.length]);
+  }, [isLoading, isError, data, search.length, limit]);
 
 
   return (   
-     <Box sx={{ maxWidth: 500, padding: 2 }}>
+     <Box sx={{ maxWidth: 500, padding: 2, margin: '0 auto' }}> 
+      
+      <Typography variant="h5" component="h1" gutterBottom sx={{ textAlign: 'center' }}>
+        Reuters AutoComplete
+      </Typography>
+
+      <FormControl component="fieldset" sx={{ mb: 2 }}>
+        <FormLabel component="legend">Results Limit</FormLabel>
+        <RadioGroup
+          row
+          name="result-limit-group"
+          value={limit}
+          onChange={handleLimitChange}
+        >
+          <FormControlLabel value="5" control={<Radio size="small" />} label="5" />
+          <FormControlLabel value="10" control={<Radio size="small" />} label="10" />
+          <FormControlLabel value="50" control={<Radio size="small" />} label="50" />
+          <FormControlLabel value="100" control={<Radio size="small" />} label="100" />
+        </RadioGroup>
+      </FormControl>
+ 
       <TextField
         fullWidth
         label="Search words"
@@ -52,8 +85,7 @@ function WordSearch() {
         value={search}
         onChange={handleChange}
         sx={{
-          backgroundColor: '#f5f5f5',
-          width: 500
+          backgroundColor: '#f5f5f5'
         }}
         inputProps={{
             role: 'combobox',
@@ -62,11 +94,6 @@ function WordSearch() {
             'aria-expanded': !!(data && data.length > 0)
         }}
       />
-      {search && (
-          <Typography gutterBottom sx={{ textAlign: 'center', py: 2   }}>
-              Current Selected term is {search}
-          </Typography>
-      )}
       
       <Box sx={{ marginTop: 2, position: 'fixed' , width:500}}>
         <Box 
