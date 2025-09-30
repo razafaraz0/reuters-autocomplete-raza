@@ -18,8 +18,9 @@ export const useGetWord = ({ query = '', limit = DEFAULT_LIMIT }: WordParams) =>
   return useQuery({
     queryKey: ['words', query || 'no-query', limit],
     queryFn: () => fetchWords({ query, limit }),
-    enabled: Boolean(query), 
-    // cacheTime: 1000 * 60 * 5,x
-    staleTime : 0,
+    enabled: Boolean(query),
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 10,
+    retry: 2,
   })
 }
