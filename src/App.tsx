@@ -1,3 +1,4 @@
+import { createTheme, CssBaseline, ThemeProvider } from '@mui/material'
 import './App.css'
 import WordSearch from './components/WordSearch'
 // Step 1 : Call the API and display the return
@@ -24,12 +25,27 @@ import WordSearch from './components/WordSearch'
 // Non function
 //  FIX styles 
 // Add some other Minor 
+const theme = createTheme({
+  palette: {
+    mode: 'light',
+    primary: {
+      main: '#72d219ff',
+    },
+    secondary: {
+      main: '#dc004e',
+    },
+  },
+  typography: {
+    fontFamily: 'system-ui, Avenir, Helvetica, Arial, sans-serif',
+  },
+});
 
 function App() {
   return (
-    <>
-      <WordSearch/>
-    </>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <WordSearch />
+    </ThemeProvider>
   )
 }
 
